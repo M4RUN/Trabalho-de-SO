@@ -1,39 +1,31 @@
-#include<stdio.h> 
-#include<string.h> 
-#include<stdlib.h> 
-#include<unistd.h> 
-#include<sys/types.h> 
-#include<sys/wait.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <stdio.h>
+
+#define READ_END 0
+#define WRITE_END 1
 
 #define MAXNUMLETRAS 100 // numero maximo de letras
-#define MAXCOMANDOS 20 // numero maximo de comandos
 
 //cria o pipe
 int criaPipe(char** comando, int n);
 //quebra o texto
 void quebra(char* texto);
-//menu do shell
-void menuInicia();
 
 int main() {
-    //menu do shell
-    menuInicia();
-    //char texto[] = "procA | procB | procC";
-    char texto[MAXNUMLETRAS];
-    //controle de retorno
-    int retorno = 0;
-    // while (1) {
-    //ler o comando
-    scanf("%s",&texto);
-    quebra(texto);
-    //}
-    return (EXIT_SUCCESS);
+    
+    char texto3[MAXNUMLETRAS];
+    fgets(texto3, MAXNUMLETRAS + 1, stdin);
+    quebra(texto3);
+    return (0);
 }
 
 int criaPipe(char** comando, int n) {
-    for (int i = 0; i < n; i++) {
-        printf("Fork-Pipe: %s\n", comando[i]);
-    }
+    printf("Fork-Pipe: %s\n", comando[n]);
     return 0;
 }
 
@@ -41,16 +33,13 @@ void quebra(char* texto) {
     char *argv[256];
     int argc = 0;
     char * token = strtok(texto, "\n |");
-
-    while (token != NULL) {
-        argv[argc++] = token;
+    while (token != NULL) {              
+        argv[argc] = token;
+        criaPipe(argv, argc);
+        argc++;
         token = strtok(NULL, " \n |");
     }
-    criaPipe(argv, argc);
 }
 
-void menuInicia() {
-    printf("\n\n\n\t****MENU SHELL****");
-    printf("\n\n\n\tDIGITE ALGUM COMANDO ");
-    printf("\n");
-}
+
+
