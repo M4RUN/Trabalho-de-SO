@@ -21,9 +21,16 @@ void quebraEmPalavras(char** texto, int qtd);
 int main() {
 
     char texto3[MAXNUMLETRAS];
+    printf("$");
     fgets(texto3, MAXNUMLETRAS + 1, stdin);
-    quebraEmComandos(texto3);
-
+    char *token;
+    token = strtok(texto3, " \n");
+    while ((strcmp(token, "sair")) != 0) {
+        quebraEmComandos(texto3);
+        printf("$");
+        fgets(texto3, MAXNUMLETRAS + 1, stdin);
+        token = strtok(texto3, " \n");
+    }
     return (0);
 }
 
@@ -33,7 +40,7 @@ static void pipeline(char ***cmd) {
     int fdd = 0;
 
     while (*cmd != NULL) {
-        pipe(fd); 
+        pipe(fd);
         if ((pid = fork()) == -1) {
             perror("fork");
             exit(1);
@@ -57,11 +64,7 @@ static void pipeline(char ***cmd) {
 void quebraEmPalavras(char** texto, int qtdC) {
     char *comandos2[qtdC][MAXNUMLETRAS];
     int qtdP = 0, aux = 0;
-
     char * token;
-
-
-
     //separando cada palavra de cada comando
     for (int i = 0; i < qtdC; i++) {
         token = strtok(texto[i], " \n");
@@ -84,12 +87,10 @@ void quebraEmPalavras(char** texto, int qtdC) {
         }
         printf("\n");
     }
-    
     pipeline(&comandos2);
 }
 
 void quebraEmComandos(char* texto) {
-
     char *comandos[MAXCOMANDOS];
     int qtd = 0;
     char * token = strtok(texto, "|");
