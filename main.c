@@ -20,17 +20,21 @@ void quebraEmPalavras(char** texto, int qtd);
 
 int main() {
 
-    char texto3[MAXNUMLETRAS];
+    char textoUser[MAXNUMLETRAS];
     printf("$");
-    fgets(texto3, MAXNUMLETRAS + 1, stdin);
+    fgets(textoUser, MAXNUMLETRAS + 1, stdin);
+    char textoAux[MAXNUMLETRAS];
+    strcpy(textoAux,textoUser);
     char *token;
-    token = strtok(texto3, " \n");
-    while ((strcmp(token, "sair")) != 0) {
-        quebraEmComandos(texto3);
+    token = strtok(textoAux, " \n");
+    while (strcmp(token, "sair") != 0) {
+        quebraEmComandos(textoUser);
         printf("$");
-        fgets(texto3, MAXNUMLETRAS + 1, stdin);
-        token = strtok(texto3, " \n");
+        fgets(textoUser, MAXNUMLETRAS + 1, stdin);
+        strcpy(textoAux,textoUser);
+        token = strtok(textoAux, " \n");
     }
+    
     return (0);
 }
 
@@ -87,7 +91,7 @@ void quebraEmPalavras(char** texto, int qtdC) {
         }
         printf("\n");
     }
-    pipeline(&comandos2);
+   // pipeline(&comandos2);
 }
 
 void quebraEmComandos(char* texto) {
