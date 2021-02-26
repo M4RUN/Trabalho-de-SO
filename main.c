@@ -8,11 +8,9 @@
 #include <sys/wait.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define MAX_NUM_LETRAS 1024 // The maximum length command
-
-int rodar = 1; // flag to determine when to exit program
-int esperar = 1; // flag to determine if process should forka in the background
 
 /**
  *funcao para quando receber o <
@@ -35,52 +33,54 @@ void salvar(char *localArquivo) {
 /**
  * forkas a command.
  * 
- * @param *argumentos[] the argumentos to forka
+ * @param *comando[] the comando to forka
  */
-void forka(char *argumentos[]) {
+int forka(char *comando[]) {
     pid_t pid;
-    if (strcmp(argumentos[0], "sair") != 0) {
+    if (strcmp(comando[0], "sair") != 0) {
         pid = fork();
         if (pid < 0) {
-            fprintf(stderr, "Fork Failed");
+            fprintf(stderr, "Fork Falhou");
+            return 1;
         } else if (pid == 0) { /* child process */
-            execvp(argumentos[0], argumentos);
+            execvp(comando[0], comando);
         } else { /* parent process */
-            if (esperar) {
-                waitpid(pid, NULL, 0);
-            } else {
-                esperar = 0;
-            }
+            waitpid(pid, NULL, 0);
         }
         ler("/dev/tty");
         salvar("/dev/tty");
     } else {
-        rodar = 0;
+        return 1;
     }
+    return 0;
 }
 
 /**
  * Creates a pipe.
  * 
- * @param argumentos [description]
+ * @param comando [description]
  */
-void criaPipe(char *argumentos[]) {
+int criaPipe(char *comando[]) {
+    int retorno = 0;
     int fd[2];
-    pipe(fd);
+    if (pipe(fd) == -1) {
+        fprintf(stderr, "Falha na criacao do pipe()");
+        return 1;
+    }
 
     dup2(fd[1], 1);
     close(fd[1]);
 
-    printf("argumentos = %s\n", *argumentos);
-
-    forka(argumentos);
+    retorno = forka(comando);
 
     dup2(fd[0], 0);
     close(fd[0]);
+
+    return retorno;
 }
 
 /*
- * Recebe o texto do usuario e o formata em um vetor 
+ * Recebe o texto do usuario e o formata em um vetor de char
  * cada palavra fica em um index
  * Possui um tratamento para os simbolos <, >, |
  * retorna um vetor formatado.
@@ -102,54 +102,47 @@ char * formatar(char *textoUser) {
     }
     formatado[j++] = '\0';
 
-    // add null to the end  
+    // add null to the end    
     char *fim;
     fim = formatado + strlen(formatado) - 1;
     fim--;
-     *(fim + 1) = '\0';
-     
-     
+    *(fim + 1) = '\0';
     return formatado;
 }
 
 int main(void) {
-    char *argumentos[MAX_NUM_LETRAS]; // Recebe os parametros do usuario
-
-    while (rodar) {
+    char textoUser[MAX_NUM_LETRAS]; // Recebe os parametros do usuario   
+    char *token; // recebe o texto do usuario formatado de forma correta
+    char *comando[MAX_NUM_LETRAS]; //recebe um comando 
+    char *palavra; //recebe uma paralavra do token
+    int retorno = 0;
+    while (retorno == 0) {
         printf("$ ");
-        //fflush(stdout);
-
-        char textoUser[MAX_NUM_LETRAS];
+        //fflush(stdout);    
         fgets(textoUser, MAX_NUM_LETRAS, stdin);
 
-        char *token;
         token = formatar(textoUser);
 
-        if (token[strlen(token) - 1] == '&') {
-            esperar = 0;
-            token[strlen(token) - 1] = '\0';
-        }
-
-        char *arg = strtok(token, " ");
+        palavra = strtok(token, " ");
         int i = 0;
-        while (arg) {
-            if (*arg == '<') {
+        while (palavra) {
+            if (*palavra == '<') {
                 ler(strtok(NULL, " "));
-            } else if (*arg == '>') {
+            } else if (*palavra == '>') {
                 salvar(strtok(NULL, " "));
-            } else if (*arg == '|') {
-                argumentos[i] = NULL;
-                criaPipe(argumentos);
+            } else if (*palavra == '|') {
+                comando[i] = NULL;
+                retorno = criaPipe(comando);
                 i = 0;
             } else {
-                argumentos[i] = arg;
+                comando[i] = palavra;
                 i++;
             }
-            arg = strtok(NULL, " ");
+            palavra = strtok(NULL, " ");
         }
-        argumentos[i] = NULL;
+        comando[i] = NULL;
 
-        forka(argumentos);
+        retorno = forka(comando);
     }
     return 0;
 }
