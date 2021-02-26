@@ -82,6 +82,7 @@ void quebraEmPalavras(char** texto, int qtdC) {
         aux = 0;
     }
     //Printando
+    /*
     for (int i = 0; i < qtdC; i++) {
         printf("Comando:%d", i);
         printf("\n");
@@ -90,8 +91,8 @@ void quebraEmPalavras(char** texto, int qtdC) {
             printf("%s ", comandos2[i][j]);
         }
         printf("\n");
-    }
-   // pipeline(&comandos2);
+    }*/
+   pipeline(&comandos2);
 }
 
 void quebraEmComandos(char* texto) {
