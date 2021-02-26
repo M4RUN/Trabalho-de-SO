@@ -115,34 +115,36 @@ int main(void) {
     char *token; // recebe o texto do usuario formatado de forma correta
     char *comando[MAX_NUM_LETRAS]; //recebe um comando 
     char *palavra; //recebe uma paralavra do token
-    int retorno = 0;
+    int retorno = 0; //variavel de controle do loop
+    int i = 0; //variavel auxiliar para a posicao dos comandos
     while (retorno == 0) {
         printf("$ ");
         //fflush(stdout);    
         fgets(textoUser, MAX_NUM_LETRAS, stdin);
 
         token = formatar(textoUser);
-
         palavra = strtok(token, " ");
-        int i = 0;
+        i = 0;
+
         while (palavra) {
-            if (*palavra == '<') {
-                ler(strtok(NULL, " "));
-            } else if (*palavra == '>') {
-                salvar(strtok(NULL, " "));
-            } else if (*palavra == '|') {
+            if (*palavra == '|') {
                 comando[i] = NULL;
                 retorno = criaPipe(comando);
                 i = 0;
+            } else if (*palavra == '>') {
+                salvar(strtok(NULL, " "));
+            } else if (*palavra == '<') {
+                ler(strtok(NULL, " "));
             } else {
                 comando[i] = palavra;
                 i++;
             }
             palavra = strtok(NULL, " ");
         }
-        comando[i] = NULL;
-
-        retorno = forka(comando);
+        if (i != 0) {//caso o usurario digite apenas enter, o programa nao gera exception na hora do fork
+            comando[i] = NULL;
+            retorno = forka(comando);
+        }
     }
     return 0;
 }
