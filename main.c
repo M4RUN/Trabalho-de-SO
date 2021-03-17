@@ -134,7 +134,13 @@ int main(void) {
             } else if (*palavra == '>') {
                 salvar(strtok(NULL, " "));
             } else if (*palavra == '<') {
-                ler(strtok(NULL, " "));
+                //Verifica se o arquivo existe
+                char *filename= strtok(NULL, " ");
+                if (access(filename, F_OK) == 0) {
+                    ler(filename);
+                } else {
+                    printf("O arquivo a ser lido não existe!");
+                }
             } else {
                 comando[i] = palavra;
                 i++;
