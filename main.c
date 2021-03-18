@@ -47,8 +47,6 @@ int forka(char *comando[]) {
         } else { /* parent process */
             waitpid(pid, NULL, 0);
         }
-        ler("/dev/tty");
-        salvar("/dev/tty");
     } else {
         return 1;
     }
