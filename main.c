@@ -30,9 +30,9 @@ int forka(char *comando[]) {
         if (pid < 0) {
             fprintf(stderr, "Fork Falhou");
             return 1;
-        } else if (pid == 0) { /* child process */
+        } else if (pid == 0) { //Processo filho
             execvp(comando[0], comando);
-        } else { /* parent process */
+        } else { //Processo pai
             waitpid(pid, NULL, 0);
         }
     } else {
