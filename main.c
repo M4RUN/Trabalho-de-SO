@@ -25,9 +25,10 @@ void ler(char *localArquivo) {
  * funcao para quando receber o >
  */
 void salvar(char *localArquivo) {
-    int arquivo = open(localArquivo, O_WRONLY | O_TRUNC | O_CREAT, 0600);
+    int arquivo = open(localArquivo, O_WRONLY | O_TRUNC | O_CREAT,0600);
     dup2(arquivo, 1);
     close(arquivo);
+    
 }
 
 /**
@@ -99,7 +100,6 @@ char * formatar(char *textoUser) {
         }
     }
     formatado[j++] = '\0';
-
     // add null to the end    
     char *fim;
     fim = formatado + strlen(formatado) - 1;
@@ -116,6 +116,8 @@ int main(void) {
     int retorno = 0; //variavel de controle do loop
     int i = 0; //variavel auxiliar para a posicao dos comandos
     while (retorno == 0) {
+        ler("/dev/tty");
+        salvar("/dev/tty");
         printf("$ ");
         //fflush(stdout);    
         fgets(textoUser, MAX_NUM_LETRAS, stdin);
@@ -133,7 +135,7 @@ int main(void) {
                 salvar(strtok(NULL, " "));
             } else if (*palavra == '<') {
                 //Verifica se o arquivo existe
-                char *filename= strtok(NULL, " ");
+                char *filename = strtok(NULL, " ");
                 if (access(filename, F_OK) == 0) {
                     ler(filename);
                 } else {
