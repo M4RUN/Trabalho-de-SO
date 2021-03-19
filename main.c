@@ -9,6 +9,7 @@
 #define MAX_NUM_LETRAS 100 // O maximo de letras por comando inserido
 
 //funcao de arquivo executada quando ler um char <
+
 void ler(char *localArquivo) {
     int arquivo = open(localArquivo, O_RDONLY);
     dup2(arquivo, 0);
@@ -16,16 +17,20 @@ void ler(char *localArquivo) {
 }
 
 //funcao de arquivo executada quando ler um char >
+
 void salvar(char *localArquivo) {
-    int arquivo = open(localArquivo, O_WRONLY | O_TRUNC | O_CREAT,0600);
+    int arquivo = open(localArquivo, O_WRONLY | O_TRUNC | O_CREAT, 0600);
     dup2(arquivo, 1);
     close(arquivo);
-    
+
 }
 
 //Realiza um fork quando ler um char |
+
 int forka(char *comando[]) {
     pid_t pid;
+    ler("/dev/tty");
+    salvar("/dev/tty");
     if (strcmp(comando[0], "sair") != 0) {
         pid = fork();
         if (pid < 0) {
@@ -43,6 +48,7 @@ int forka(char *comando[]) {
 }
 
 //Cria um pipe
+
 int criaPipe(char *comando[]) {
     int retorno = 0;
     int fd[2];
@@ -63,6 +69,7 @@ int criaPipe(char *comando[]) {
 }
 
 //Recebe o texto do usuario e o formata em um vetor de char
+
 char * formatar(char *textoUser) {
     int i;
     int j = 0;
