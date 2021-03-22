@@ -87,9 +87,7 @@ char * formatar(char *textoUser) {
             formatado[j++] = ' ';
         }
     }
-    formatado[j++] = '\0';
-
-    // add null to the end    
+    formatado[j++] = '\0';  
 
     // adcionando null no final
     char *fim;
