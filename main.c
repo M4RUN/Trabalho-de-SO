@@ -29,8 +29,8 @@ void salvar(char *localArquivo) {
 
 int forka(char *comando[]) {
     pid_t pid;
-    ler("/dev/tty");
-    salvar("/dev/tty");
+
+
     if (strcmp(comando[0], "sair") != 0) {
         pid = fork();
         if (pid < 0) {
@@ -44,6 +44,8 @@ int forka(char *comando[]) {
     } else {
         return 1;
     }
+    salvar("/dev/tty");
+    ler("/dev/tty");
     return 0;
 }
 
